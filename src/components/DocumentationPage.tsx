@@ -70,33 +70,6 @@ toast.success('Saved!');`,
 <script>
   vanillaToast.success('Saved!');
 </script>`,
-  toast: `import { toast } from 'vanilla-toast-js';
-
-function renderToast() {
-  toast('Event created', {
-    description: 'Sunday at 9:00 AM',
-    closeButton: true,
-  });
-}`,
-  promise: `toast.promise(fetch('/api/save'), {
-  loading: 'Saving...',
-  success: 'Saved!',
-  error: 'Save failed',
-});`,
-  configure: `toast.configure({
-  position: 'bottom-right',
-  duration: 4000,
-  richColors: true,
-  closeButton: true,
-  progressBar: true,
-  maxVisible: 5,
-  theme: 'system',
-  animation: 'slide',
-  pauseOnHover: true,
-  swipeToDismiss: true,
-  keyboardDismiss: true,
-  expandOnHover: true,
-});`,
   styling: `:root {
   --vt-bg: #ffffff;
   --vt-color: #171717;
@@ -118,15 +91,82 @@ toast.promise<T>(promise: Promise<T> | (() => Promise<T>), messages: ToastPromis
 toast.configure(options: Partial<ToasterOptions>): void;`,
 };
 
-function applyDocumentTheme(theme: ThemeMode) {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && prefersDark));
-  document.documentElement.dataset.theme = theme;
+const toastDemoCodeSamples = {
+  'Default': `import { toast } from 'vanilla-toast-js';
+
+toast('Event created', {
+  description: 'Sunday at 9:00 AM',
+  closeButton: true,
+});`,
+  'Success': `import { toast } from 'vanilla-toast-js';
+
+toast.success('Saved', {
+  description: 'Your changes are live.',
+  richColors: true,
+});`,
+  'Warning': `import { toast } from 'vanilla-toast-js';
+
+toast.warning('Check your input', {
+  richColors: true,
+});`,
+  'Error': `import { toast } from 'vanilla-toast-js';
+
+toast.error('Save failed', {
+  description: 'Please try again.',
+  richColors: true,
+});`,
+  'Loading': `import { toast } from 'vanilla-toast-js';
+
+const id = toast.loading('Uploading...', {
+  closeButton: true,
+  duration: Infinity,
+});
+
+// Later update the toast state:
+window.setTimeout(() => {
+  toast.update(id, {
+    title: 'Upload complete',
+    type: 'success',
+    duration: 3000,
+    richColors: true,
+  });
+}, 1400);`,
+  'Promise': `import { toast } from 'vanilla-toast-js';
+
+toast.promise(
+  new Promise((resolve) => window.setTimeout(resolve, 1400)),
+  {
+    loading: 'Saving...',
+    success: 'Saved!',
+    error: 'Save failed',
+  }
+);`,
+};
+
+async function copyToClipboard(text: string) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.position = 'fixed';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      console.error('Fallback copy failed', err);
+    }
+    document.body.removeChild(textArea);
+  }
 }
 
 function CodeBlock({ code, label }: { code: string; label: string }) {
   const copyCode = async () => {
-    await navigator.clipboard.writeText(code);
+    await copyToClipboard(code);
     toast.success('Copied to clipboard', {
       description: label,
       closeButton: true,
@@ -140,7 +180,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
         <button
           type="button"
           onClick={copyCode}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary cursor-pointer"
           aria-label={`Copy ${label}`}
         >
           <Clipboard size={15} />
@@ -170,7 +210,7 @@ function ThemeSelector({ theme, setTheme }: { theme: ThemeMode; setTheme: (theme
               key={option.value}
               type="button"
               onClick={() => setTheme(option.value)}
-              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors ${
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-2 text-xs font-medium transition-colors cursor-pointer ${
                 active
                   ? 'bg-surface text-primary shadow-sm'
                   : 'text-on-surface-variant hover:text-primary'
@@ -186,7 +226,15 @@ function ThemeSelector({ theme, setTheme }: { theme: ThemeMode; setTheme: (theme
   );
 }
 
-function Sidebar({ mobileOpen, closeMobile }: { mobileOpen: boolean; closeMobile: () => void }) {
+function Sidebar({ 
+  mobileOpen, 
+  closeMobile,
+  activeSection 
+}: { 
+  mobileOpen: boolean; 
+  closeMobile: () => void;
+  activeSection: string;
+}) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-72 border-r border-border-subtle bg-surface px-6 py-5 transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
@@ -206,7 +254,7 @@ function Sidebar({ mobileOpen, closeMobile }: { mobileOpen: boolean; closeMobile
         <button
           type="button"
           onClick={closeMobile}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-container-low lg:hidden"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-container-low lg:hidden cursor-pointer"
           aria-label="Close navigation"
         >
           <X size={18} />
@@ -218,16 +266,25 @@ function Sidebar({ mobileOpen, closeMobile }: { mobileOpen: boolean; closeMobile
           <div key={group.title}>
             <p className="mb-3 font-label-sm text-label-sm uppercase text-muted">{group.title}</p>
             <div className="space-y-1">
-              {group.items.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMobile}
-                  className="block rounded-md px-2 py-1.5 text-sm text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary"
-                >
-                  {item.label}
-                </a>
-              ))}
+              {group.items.map((item) => {
+                const id = item.href.replace('#', '');
+                const isActive = id === activeSection;
+
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMobile}
+                    className={`block rounded-md px-2 py-1.5 text-sm transition-all duration-150 ${
+                      isActive
+                        ? 'bg-surface-container-high text-primary font-semibold'
+                        : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -235,6 +292,8 @@ function Sidebar({ mobileOpen, closeMobile }: { mobileOpen: boolean; closeMobile
 
       <a
         href={links.github}
+        target="_blank"
+        rel="noopener noreferrer"
         className="mt-10 flex items-center justify-between rounded-lg border border-border-subtle bg-surface-container-low p-3 text-sm text-primary transition-colors hover:bg-surface-container-high"
       >
         <span className="flex items-center gap-2">
@@ -247,34 +306,93 @@ function Sidebar({ mobileOpen, closeMobile }: { mobileOpen: boolean; closeMobile
   );
 }
 
-export default function DocumentationPage() {
-  const [theme, setThemeState] = useState<ThemeMode>(() => {
-    const stored = localStorage.getItem('vanilla-toast-docs-theme') as ThemeMode | null;
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
-  });
+export default function DocumentationPage({ 
+  theme, 
+  setTheme 
+}: { 
+  theme: ThemeMode; 
+  setTheme: (theme: ThemeMode) => void; 
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeDemo, setActiveDemo] = useState('Default');
+  const [activeSection, setActiveSection] = useState('getting-started');
+
+  // IntersectionObserver for scroll-spy highlighting
+  useEffect(() => {
+    const sectionIds = [
+      'getting-started',
+      'installation',
+      'usage',
+      'cdn',
+      'toast',
+      'types',
+      'promise',
+      'configuration',
+      'styling',
+      'reference',
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-15% 0px -75% 0px', // triggers when the section enters the viewport's middle-top
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, []);
 
   const demoButtons = useMemo(
     () => [
       {
         label: 'Default',
-        onClick: () => toast('Event created', { description: 'Sunday at 9:00 AM', closeButton: true }),
+        onClick: () => {
+          setActiveDemo('Default');
+          toast('Event created', { description: 'Sunday at 9:00 AM', closeButton: true });
+        },
       },
       {
         label: 'Success',
-        onClick: () => toast.success('Saved', { description: 'Your changes are live.', richColors: true }),
+        onClick: () => {
+          setActiveDemo('Success');
+          toast.success('Saved', { description: 'Your changes are live.', richColors: true });
+        },
       },
       {
         label: 'Warning',
-        onClick: () => toast.warning('Check your input', { richColors: true }),
+        onClick: () => {
+          setActiveDemo('Warning');
+          toast.warning('Check your input', { richColors: true });
+        },
       },
       {
         label: 'Error',
-        onClick: () => toast.error('Save failed', { description: 'Please try again.', richColors: true }),
+        onClick: () => {
+          setActiveDemo('Error');
+          toast.error('Save failed', { description: 'Please try again.', richColors: true });
+        },
       },
       {
         label: 'Loading',
         onClick: () => {
+          setActiveDemo('Loading');
           const id = toast.loading('Uploading...', { closeButton: true, duration: Infinity });
 
           window.setTimeout(() => {
@@ -289,47 +407,25 @@ export default function DocumentationPage() {
       },
       {
         label: 'Promise',
-        onClick: () =>
+        onClick: () => {
+          setActiveDemo('Promise');
           toast.promise(new Promise((resolve) => window.setTimeout(resolve, 1400)), {
             loading: 'Saving...',
             success: 'Saved!',
             error: 'Save failed',
-          }),
+          });
+        },
       },
     ],
     [],
   );
-
-  const setTheme = (nextTheme: ThemeMode) => {
-    setThemeState(nextTheme);
-    localStorage.setItem('vanilla-toast-docs-theme', nextTheme);
-  };
-
-  useEffect(() => {
-    applyDocumentTheme(theme);
-    toast.configure({
-      theme,
-      position: 'bottom-right',
-      closeButton: true,
-      progressBar: true,
-      richColors: true,
-      swipeToDismiss: true,
-      keyboardDismiss: true,
-    });
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    const listener = () => applyDocumentTheme(theme);
-    media.addEventListener('change', listener);
-
-    return () => media.removeEventListener('change', listener);
-  }, [theme]);
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
       {mobileOpen && <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileOpen(false)} />}
 
       <div className="lg:grid lg:grid-cols-[288px_minmax(0,1fr)]">
-        <Sidebar mobileOpen={mobileOpen} closeMobile={() => setMobileOpen(false)} />
+        <Sidebar mobileOpen={mobileOpen} closeMobile={() => setMobileOpen(false)} activeSection={activeSection} />
 
         <div className="min-w-0">
           <header className="sticky top-0 z-30 border-b border-border-subtle bg-surface/85 backdrop-blur-md">
@@ -337,7 +433,7 @@ export default function DocumentationPage() {
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle text-primary lg:hidden"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border-subtle text-primary lg:hidden cursor-pointer"
                 aria-label="Open navigation"
               >
                 <Menu size={18} />
@@ -352,10 +448,10 @@ export default function DocumentationPage() {
                 <a className="hidden text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline" href="/">
                   Home
                 </a>
-                <a className="hidden text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline" href={links.npm}>
+                <a className="hidden text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline" href={links.npm} target="_blank" rel="noopener noreferrer">
                   npm
                 </a>
-                <a className="hidden text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline" href={links.issues}>
+                <a className="hidden text-sm text-on-surface-variant transition-colors hover:text-primary sm:inline" href={links.issues} target="_blank" rel="noopener noreferrer">
                   issues
                 </a>
                 <ThemeSelector theme={theme} setTheme={setTheme} />
@@ -379,12 +475,14 @@ export default function DocumentationPage() {
                   <button
                     type="button"
                     onClick={() => toast.success('Vanilla Toast is rendering from the npm package.', { description: 'This is not the old mock toaster.' })}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-on-primary transition-transform active:scale-95"
+                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-on-primary transition-transform active:scale-95 cursor-pointer"
                   >
                     Render Toast
                   </button>
                   <a
                     href={links.npm}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-lg border border-border-subtle px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-surface-container-low"
                   >
                     View npm package
@@ -420,13 +518,17 @@ export default function DocumentationPage() {
                       key={button.label}
                       type="button"
                       onClick={button.onClick}
-                      className="rounded-lg border border-border-subtle bg-surface px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-surface-container-low"
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                        activeDemo === button.label
+                          ? 'bg-surface-container-high border-outline shadow-sm text-primary'
+                          : 'border-border-subtle bg-surface text-primary hover:bg-surface-container-low'
+                      }`}
                     >
                       {button.label}
                     </button>
                   ))}
                 </div>
-                <CodeBlock label="toast.ts" code={codeSamples.toast} />
+                <CodeBlock label="toast.ts" code={toastDemoCodeSamples[activeDemo as keyof typeof toastDemoCodeSamples]} />
               </section>
 
               <section id="types" className="docs-section">
@@ -444,13 +546,13 @@ export default function DocumentationPage() {
               <section id="promise" className="docs-section">
                 <h2>Promise Toasts</h2>
                 <p>Bind a loading, success, and error message to a promise.</p>
-                <CodeBlock label="promise.ts" code={codeSamples.promise} />
+                <CodeBlock label="promise.ts" code={toastDemoCodeSamples['Promise']} />
               </section>
 
               <section id="configuration" className="docs-section">
                 <h2>Configuration</h2>
                 <p>Configure defaults for position, duration, progress bars, theme, keyboard dismissal, and stack behavior.</p>
-                <CodeBlock label="configure.ts" code={codeSamples.configure} />
+                <CodeBlock label="configure.ts" code={codeSamples.styling} />
               </section>
 
               <section id="styling" className="docs-section">
@@ -470,11 +572,33 @@ export default function DocumentationPage() {
               <div className="sticky top-24">
                 <p className="mb-3 text-sm font-medium text-primary">On this page</p>
                 <nav className="space-y-2">
-                  {pageLinks.map((link) => (
-                    <a key={link.href} href={link.href} className="block text-sm text-on-surface-variant transition-colors hover:text-primary">
-                      {link.label}
-                    </a>
-                  ))}
+                  {pageLinks.map((link) => {
+                    const id = link.href.replace('#', '');
+                    // For active state mapping
+                    const mappedActiveId = 
+                      id === 'installation' ? 'installation' :
+                      id === 'usage' ? 'usage' :
+                      id === 'cdn' ? 'cdn' :
+                      id === 'toast' ? 'toast' :
+                      id === 'configuration' ? 'configuration' :
+                      id === 'reference' ? 'reference' : '';
+                    
+                    const isActive = mappedActiveId === activeSection;
+
+                    return (
+                      <a 
+                        key={link.href} 
+                        href={link.href} 
+                        className={`block text-sm transition-colors border-l-2 pl-3 ${
+                          isActive
+                            ? 'border-primary text-primary font-semibold'
+                            : 'border-transparent text-on-surface-variant hover:text-primary'
+                        }`}
+                      >
+                        {link.label}
+                      </a>
+                    );
+                  })}
                 </nav>
               </div>
             </aside>

@@ -20,19 +20,19 @@ function StackedHeroToasts() {
         initial={{ top: 10, scale: 0.9, opacity: 0 }}
         animate={{ top: -16, scale: 0.92, opacity: 0.6 }}
         transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
-        className="absolute w-full h-[48px] bg-white border border-border-subtle rounded-lg z-10 shadow-sm" 
+        className="absolute w-full h-[48px] bg-surface border border-border-subtle rounded-lg z-10 shadow-sm" 
       />
       <motion.div 
         initial={{ top: 10, scale: 0.9, opacity: 0 }}
         animate={{ top: -8, scale: 0.96, opacity: 0.8 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-        className="absolute w-full h-[48px] bg-white border border-border-subtle rounded-lg z-20 shadow-sm" 
+        className="absolute w-full h-[48px] bg-surface border border-border-subtle rounded-lg z-20 shadow-sm" 
       />
       <motion.div 
         initial={{ top: 10, scale: 0.9, opacity: 0 }}
         animate={{ top: 0, scale: 1, opacity: 1 }}
         transition={{ delay: 0, type: "spring", stiffness: 200, damping: 20 }}
-        className="absolute w-full h-[48px] bg-white border border-border-subtle rounded-lg z-30 flex items-center px-4 shadow-sm"
+        className="absolute w-full h-[48px] bg-surface border border-border-subtle rounded-lg z-30 flex items-center px-4 shadow-sm"
       >
         <div className="h-4 w-4 rounded-full bg-surface-container-highest flex-shrink-0 mr-3" />
         <div className="h-2 w-32 bg-surface-container-high rounded-full" />
@@ -106,8 +106,29 @@ export default function LandingPage() {
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText('npm install vanilla-toast-js');
+  const copyToClipboard = async (text: string) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.position = 'fixed';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Fallback copy failed', err);
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleCopy = async () => {
+    await copyToClipboard('npm install vanilla-toast-js');
     toast.success('Copied to clipboard');
   };
 
@@ -122,24 +143,24 @@ export default function LandingPage() {
           A lightweight, framework-independent toast notification library for Vanilla JavaScript with TypeScript types, CDN bundles, stacked animations, promise handling, and zero runtime dependencies.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          <span className="bg-white border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">v{packageInfo.version}</span>
-          <span className="bg-white border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">{packageInfo.downloads} downloads {packageInfo.downloadWindow}</span>
-          <span className="bg-white border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">{packageInfo.license}</span>
+          <span className="bg-surface border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">v{packageInfo.version}</span>
+          <span className="bg-surface border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">{packageInfo.downloads} downloads {packageInfo.downloadWindow}</span>
+          <span className="bg-surface border border-border-subtle px-3 py-1.5 rounded-lg text-sm text-on-surface-variant">{packageInfo.license}</span>
         </div>
         <div className="flex justify-center gap-4">
           <button 
             onClick={() => toast.success('Vanilla Toast is ready', { description: 'No framework required' })}
-            className="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium active:scale-95 transition-all shadow-sm"
+            className="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium active:scale-95 transition-all shadow-sm cursor-pointer"
           >
             Render a toast
           </button>
-          <a href={packageInfo.repository} className="inline-flex items-center gap-2 bg-white border text-primary border-border-subtle px-6 py-2.5 rounded-lg font-medium hover:bg-surface-container-low active:scale-95 transition-all shadow-sm">
+          <a href={packageInfo.repository} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-surface border text-primary border-border-subtle px-6 py-2.5 rounded-lg font-medium hover:bg-surface-container-low active:scale-95 transition-all shadow-sm">
             <Github size={18} />
             GitHub
           </a>
         </div>
         <div>
-          <a className="text-on-surface-variant underline underline-offset-4 hover:text-primary transition-colors text-sm" href={packageInfo.npm}>
+          <a className="text-on-surface-variant underline underline-offset-4 hover:text-primary transition-colors text-sm" href={packageInfo.npm} target="_blank" rel="noopener noreferrer">
             View package on npm
           </a>
         </div>
@@ -204,7 +225,7 @@ toast.error('Failed')`}</code></pre>
                 setActiveType(type);
                 toastConfigs[type].action();
               }}
-            className={`px-4 py-2 bg-white border border-border-subtle rounded-lg text-sm font-medium transition-all ${
+            className={`px-4 py-2 bg-surface text-primary border border-border-subtle rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeType === type 
                   ? 'bg-surface-container-high border-outline shadow-sm' 
                   : 'hover:bg-surface-container-low'
@@ -223,7 +244,7 @@ toast.error('Failed')`}</code></pre>
 
       {/* Feature facts */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-bento-gap">
-        <div className="md:col-span-2 bg-white border border-border-subtle p-6 rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
+        <div className="md:col-span-2 bg-surface border border-border-subtle p-6 rounded-xl flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
           <div className="space-y-2">
             <span className="inline-block bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-2 py-1 rounded">PACKAGE</span>
             <h3 className="font-headline-md text-headline-md mt-4 text-primary">Zero Runtime Dependencies</h3>
@@ -236,11 +257,11 @@ toast.error('Failed')`}</code></pre>
           </div>
         </div>
 
-        <div className="bg-primary text-on-primary p-6 rounded-xl flex flex-col justify-between hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1">
-          <Sparkles className="text-on-primary mb-6" size={32} />
+        <div className="bg-primary text-on-primary dark:bg-surface-container-low dark:text-primary p-6 rounded-xl flex flex-col justify-between hover:shadow-lg transition-transform duration-300 transform hover:-translate-y-1">
+          <Sparkles className="text-on-primary dark:text-primary mb-6" size={32} />
           <div className="space-y-2">
-            <h3 className="font-headline-md text-headline-md text-white">Stacked Animations</h3>
-            <p className="text-on-primary-container text-body-base border-white">Smooth stacks, promise states, swipe dismissal, progress bars, and keyboard-friendly controls.</p>
+            <h3 className="font-headline-md text-headline-md text-white dark:text-primary">Stacked Animations</h3>
+            <p className="text-on-primary-container dark:text-on-surface-variant text-body-base border-white">Smooth stacks, promise states, swipe dismissal, progress bars, and keyboard-friendly controls.</p>
           </div>
         </div>
       </section>
@@ -256,7 +277,7 @@ toast.error('Failed')`}</code></pre>
           ].map((item) => {
             const Icon = item.icon;
             return (
-              <div key={item.title} className="bg-white border border-border-subtle p-5 rounded-xl">
+              <div key={item.title} className="bg-surface border border-border-subtle p-5 rounded-xl">
                 <Icon size={22} className="text-primary mb-4" />
                 <h3 className="font-semibold text-primary mb-2">{item.title}</h3>
                 <p className="text-on-surface-variant text-body-base">{item.body}</p>
