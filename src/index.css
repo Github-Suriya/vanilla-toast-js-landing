@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #848484;
+  --color-surface: #f9f9f9;
+  --color-on-surface: #1a1c1c;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-on-surface-variant: #4c4546;
+  --color-border-subtle: #E5E7EB;
+  --color-surface-muted: #F9FAFB;
+  --color-surface-bright: #f9f9f9;
+  --color-secondary-fixed: #dce2f3;
+
+  --spacing-bento-gap: 12px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .font-display-lg { font-family: 'Inter', sans-serif; font-weight: 600; }
+  .text-display-lg { font-size: 48px; line-height: 1.1; letter-spacing: -0.04em; }
+
+  .font-headline-md { font-family: 'Inter', sans-serif; font-weight: 600; }
+  .text-headline-md { font-size: 24px; line-height: 1.2; letter-spacing: -0.02em; }
+
+  .font-body-base { font-family: 'Inter', sans-serif; font-weight: 400; }
+  .text-body-base { font-size: 14px; line-height: 1.5; letter-spacing: -0.01em; }
+
+  .font-code-snippet { font-family: 'JetBrains Mono', monospace; font-weight: 400; }
+  .text-code-snippet { font-size: 13px; line-height: 1.6; }
+
+  .font-label-sm { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  .text-label-sm { font-size: 12px; line-height: 1; letter-spacing: 0.02em; }
+}
