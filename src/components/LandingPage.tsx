@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Copy, Sparkles, ArrowRight, Github, Package, ShieldCheck } from 'lucide-react';
-import { toast } from '../lib/toastStore';
+import { toast } from 'vanilla-toast-js';
 
 const packageInfo = {
   version: '1.0.3',
@@ -10,7 +10,7 @@ const packageInfo = {
   license: 'MIT',
   repository: 'https://github.com/Github-Suriya/vanilla-toast-js',
   npm: 'https://www.npmjs.com/package/vanilla-toast-js',
-  docs: 'https://github.com/Github-Suriya/vanilla-toast-js#readme',
+  docs: '/getting-start',
 };
 
 function StackedHeroToasts() {
@@ -45,6 +45,15 @@ export default function LandingPage() {
   const [activeType, setActiveType] = useState('default');
   const [hoverInstall, setHoverInstall] = useState(false);
 
+  useEffect(() => {
+    toast.configure({
+      position: 'bottom-right',
+      closeButton: true,
+      progressBar: true,
+      richColors: true,
+    });
+  }, []);
+
   const toastConfigs: Record<string, { label: string, code: string, action: () => void }> = {
     'default': {
       label: 'Default',
@@ -54,7 +63,7 @@ export default function LandingPage() {
     'description': {
       label: 'Description',
       code: "toast('Event created', { description: 'Sunday at 9:00 AM', closeButton: true })",
-      action: () => toast('Event created', { desc: 'Sunday at 9:00 AM' })
+      action: () => toast('Event created', { description: 'Sunday at 9:00 AM', closeButton: true })
     },
     'success': {
       label: 'Success',
@@ -79,7 +88,13 @@ export default function LandingPage() {
     'action': {
       label: 'Action',
       code: "toast('File deleted', { action: { label: 'Undo', onClick: restoreFile }, closeButton: true })",
-      action: () => toast('File deleted', { action: 'Undo', onActionClick: () => toast.success('File restored') })
+      action: () => toast('File deleted', { 
+        action: { 
+          label: 'Undo', 
+          onClick: () => toast.success('File restored') 
+        }, 
+        closeButton: true 
+      })
     },
     'promise': {
       label: 'Promise',
@@ -113,7 +128,7 @@ export default function LandingPage() {
         </div>
         <div className="flex justify-center gap-4">
           <button 
-            onClick={() => toast.success('Vanilla Toast is ready', { desc: 'No framework required' })}
+            onClick={() => toast.success('Vanilla Toast is ready', { description: 'No framework required' })}
             className="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-medium active:scale-95 transition-all shadow-sm"
           >
             Render a toast
@@ -257,7 +272,7 @@ toast.error('Failed')`}</code></pre>
         <p className="text-on-surface-variant text-body-base max-w-lg mx-auto">
           See configuration, themes, CSS variables, browser support, migration notes, and the complete TypeScript API reference.
         </p>
-        <a className="inline-flex text-primary items-center gap-2 font-medium hover:gap-4 transition-all duration-300 group" href={packageInfo.docs}>
+        <a className="inline-flex text-primary items-center gap-2 font-medium hover:gap-4 transition-all duration-300 group" href="/getting-start">
           Open documentation
           <ArrowRight size={18} className="text-primary group-hover:translate-x-1 transition-transform" />
         </a>

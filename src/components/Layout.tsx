@@ -2,7 +2,6 @@ import { Github, Moon } from 'lucide-react';
 
 const links = {
   github: 'https://github.com/Github-Suriya/vanilla-toast-js',
-  docs: 'https://github.com/Github-Suriya/vanilla-toast-js#readme',
   issues: 'https://github.com/Github-Suriya/vanilla-toast-js/issues',
   npm: 'https://www.npmjs.com/package/vanilla-toast-js',
 };
@@ -11,13 +10,13 @@ export function Navbar() {
   return (
     <header className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-border-subtle">
       <div className="flex justify-between items-center max-w-4xl mx-auto px-6 py-4">
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2 hover:opacity-85 transition-opacity">
           <span className="font-headline-md text-headline-md font-bold tracking-tight text-primary">
             Vanilla Toast JS
           </span>
-        </div>
+        </a>
         <nav className="hidden md:flex gap-8 items-center">
-          <a className="text-primary font-semibold font-body-base text-body-base" href={links.docs}>Documentation</a>
+          <a className="text-primary font-semibold font-body-base text-body-base" href="/getting-start">Documentation</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors font-body-base text-body-base" href={links.npm}>NPM</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors font-body-base text-body-base" href={links.issues}>Issues</a>
         </nav>
@@ -49,7 +48,7 @@ export function Footer() {
         </a>
         <div className="flex gap-8">
           <a className="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm underline-offset-4 hover:underline" href={links.github}>GitHub</a>
-          <a className="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm underline-offset-4 hover:underline" href={links.docs}>Docs</a>
+          <a className="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm underline-offset-4 hover:underline" href="/getting-start">Docs</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm underline-offset-4 hover:underline" href={links.issues}>Issues</a>
           <a className="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm underline-offset-4 hover:underline" href={links.npm}>NPM</a>
         </div>

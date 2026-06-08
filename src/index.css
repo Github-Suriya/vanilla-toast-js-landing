@@ -15,11 +15,62 @@
   --color-surface-muted: #F9FAFB;
   --color-surface-bright: #f9f9f9;
   --color-secondary-fixed: #dce2f3;
+  --color-code-panel: #f8f8f8;
+  --color-muted: #8a8a8a;
 
   --spacing-bento-gap: 12px;
 }
 
 @layer base {
+  :root {
+    --color-primary: #000000;
+    --color-on-primary: #ffffff;
+    --color-on-primary-container: #848484;
+    --color-surface: #ffffff;
+    --color-on-surface: #1a1c1c;
+    --color-surface-container-low: #f6f6f6;
+    --color-surface-container-high: #eeeeee;
+    --color-surface-container-highest: #e2e2e2;
+    --color-on-surface-variant: #565656;
+    --color-border-subtle: #e7e7e7;
+    --color-surface-muted: #fafafa;
+    --color-surface-bright: #ffffff;
+    --color-secondary-fixed: #eef2ff;
+    --color-code-panel: #fafafa;
+    --color-muted: #8a8a8a;
+    --vt-bg: #ffffff;
+    --vt-color: #171717;
+    --vt-border: #e8e8e8;
+    --vt-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  html.dark {
+    color-scheme: dark;
+    --color-primary: #f5f5f5;
+    --color-on-primary: #101010;
+    --color-on-primary-container: #b8b8b8;
+    --color-surface: #0f0f0f;
+    --color-on-surface: #ededed;
+    --color-surface-container-low: #171717;
+    --color-surface-container-high: #222222;
+    --color-surface-container-highest: #303030;
+    --color-on-surface-variant: #b8b8b8;
+    --color-border-subtle: #2a2a2a;
+    --color-surface-muted: #151515;
+    --color-surface-bright: #111111;
+    --color-secondary-fixed: #202940;
+    --color-code-panel: #121212;
+    --color-muted: #777777;
+    --vt-bg: #171717;
+    --vt-color: #f5f5f5;
+    --vt-border: #303030;
+    --vt-shadow: 0 18px 44px rgba(0, 0, 0, 0.36);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-surface);
     color: var(--color-on-surface);
@@ -44,4 +95,29 @@
 
   .font-label-sm { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
   .text-label-sm { font-size: 12px; line-height: 1; letter-spacing: 0.02em; }
+}
+
+@layer components {
+  .docs-section {
+    scroll-margin-top: 96px;
+    border-top: 1px solid var(--color-border-subtle);
+    padding-top: 48px;
+    margin-top: 48px;
+  }
+
+  .docs-section h2 {
+    color: var(--color-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0;
+    margin-bottom: 12px;
+  }
+
+  .docs-section p {
+    color: var(--color-on-surface-variant);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
 }
